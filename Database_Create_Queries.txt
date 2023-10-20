@@ -1,0 +1,87 @@
+ CREATE TABLE CovidPatientTrack.City (
+ id SERIAL PRIMARY KEY,
+ name VARCHAR(255) UNIQUE NOT NULL);
+ 
+ CREATE TABLE CovidPatientTrack.Type (
+ id SERIAL PRIMARY KEY,
+ name VARCHAR(255) UNIQUE NOT NULL);
+ 
+ CREATE TABLE CovidPatientTrack.RiskStatus (
+ id SERIAL PRIMARY KEY,
+ name VARCHAR(255) UNIQUE NOT NULL);
+ 
+ CREATE TABLE CovidPatientTrack.Building (
+ id SERIAL PRIMARY KEY,
+ name VARCHAR(255) NOT NULL,
+ address VARCHAR(255) NOT NULL,
+ max_capacity INT NOT NULL,
+ risk_status_id INT NOT NULL,
+ type_id INT NOT NULL,
+ city_id INT NOT NULL,
+ FOREIGN KEY (risk_status_id) REFERENCES CovidPatientTrack.RiskStatus(id),
+ FOREIGN KEY (type_id) REFERENCES CovidPatientTrack.Type(id),
+ FOREIGN KEY (city_id) REFERENCES CovidPatientTrack.City(id)
+ );
+ 
+ CREATE TABLE CovidPatientTrack.Agent (
+ username VARCHAR(32) PRIMARY KEY,
+ name VARCHAR(30) NOT NULL,
+ surname VARCHAR(30) NOT NULL,
+ password VARCHAR(50) NOT NULL,
+ building_id INT NOT NULL,
+ FOREIGN KEY (building_id) REFERENCES CovidPatientTrack.Building(id)
+ );
+ 
+ CREATE TABLE CovidPatientTrack.Clinic (
+ id SERIAL PRIMARY KEY,
+ name VARCHAR(30) NOT NULL,
+ address VARCHAR(255),
+ city_id INT NOT NULL,
+ FOREIGN KEY (city_id) REFERENCES CovidPatientTrack.City(id)
+ );
+ 
+ 
+ CREATE TABLE CovidPatientTrack.Clinician (
+ username VARCHAR(32) PRIMARY KEY,
+ clinic_id INT NOT NULL,
+ name VARCHAR(30) NOT NULL,
+ surname VARCHAR(30) NOT NULL,
+ password VARCHAR(50) NOT NULL,
+ FOREIGN KEY (clinic_id) REFERENCES CovidPatientTrack.Clinic(id)
+ );
+ 
+ CREATE TABLE CovidPatientTrack.Citizen (
+ id_number VARCHAR(20) PRIMARY KEY,
+ name VARCHAR(30) NOT NULL,
+ surname VARCHAR(30) NOT NULL,
+ date_of_birth DATE NOT NULL,
+ gender VARCHAR(10) NOT NULL,
+ risk_status_id INT NOT NULL,
+ password VARCHAR(50) NOT NULL,
+ address VARCHAR(255) NOT NULL,
+ city_id INT NOT NULL,
+ FOREIGN KEY (city_id) REFERENCES CovidPatientTrack.City(id),
+ FOREIGN KEY (risk_status_id) REFERENCES CovidPatientTrack.RiskStatus(id)
+ );
+ 
+ CREATE TABLE CovidPatientTrack.Visit (
+ building_id INT NOT NULL,
+ citizen_id VARCHAR(20) NOT NULL,
+ entry_date_time TIMESTAMP NOT NULL DEFAULT current_timestamp,
+ exit_date_time TIMESTAMP NULL,
+ PRIMARY KEY (building_id,citizen_id,entry_date_time),
+ FOREIGN KEY (building_id) REFERENCES CovidPatientTrack.Building(id),
+ FOREIGN KEY (citizen_id) REFERENCES CovidPatientTrack.Citizen(id_number)
+ );
+
+ CREATE TABLE CovidPatientTrack.HaveTest (
+ clinician_id INT NOT NULL,
+ citizen_id VARCHAR(20) NOT NULL,
+ date DATE NOT NULL,
+ result BOOLEAN NOT NULL DEFAULT FALSE,
+ PRIMARY KEY (clinician_id,citizen_id,date),
+ FOREIGN KEY (clinician_id) REFERENCES CovidPatientTrack.Clinician(id),
+ FOREIGN KEY (citizen_id) REFERENCES CovidPatientTrack.Citizen(id_number)
+ );
+
+ 

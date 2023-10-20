@@ -1,0 +1,34 @@
+-- Insert Queries
+
+insert into CovidPatientTrack.City (name) values ('Padova');
+
+insert into CovidPatientTrack.Type (name) values ('Restaurant');
+
+insert into CovidPatientTrack.RiskStatus (name) values ('Yellow'),('Red'),('Green');
+
+insert into CovidPatientTrack.Building (name,address,max_capacity,risk_status_id,type_id,city_id) 
+values ('McDonald''s', 'Via Venezia, 92, 35131 Padova PD',16,3,1,1);
+
+insert into CovidPatientTrack.Agent (username,name,surname,password,building_id) values ('agent_test_user','Emre','Ulas','Emre.123',1);
+
+insert into CovidPatientTrack.Clinic (name,city_id) values ('Padova Central Clinic',1);
+
+insert into CovidPatientTrack.Clinician (username,clinic_id,name,surname,password) values ('Clinician_Test',1,'Taylan','Yuksel','Taylan.123');
+
+insert into CovidPatientTrack.Citizen (id_number,name,surname,date_of_birth,gender,risk_status_id,password,address,city_id) 
+values ('U123456789','Achraf','Sahnoun','1996-01-11','Male',3,'Achraf.123','Tunisia, Tunusia',1);
+
+insert into CovidPatientTrack.Visit (building_id,citizen_id,entry_date_time,exit_date_time) 
+values (1,'U123456789','2020-11-30 12:00:00','2020-11-30 12:30:00');
+
+insert into CovidPatientTrack.HaveTest (clinician_username,citizen_id,date,result) 
+values ('Clinician_Test','U123456789','2020-11-30',True);
+
+
+--Select Queries
+
+select ci.address from covidpatienttrack.havetest ht join covidpatienttrack.citizen ci on ht.citizen_id = ci.id_number
+where ht.result = true
+
+select ci.name from covidpatienttrack.visit v join covidpatienttrack.building b on v.building_id = b.id join covidpatienttrack.city ci on ci.id = b.city_id 
+where v.entry_date_time BETWEEN '2020-11-30 12:00:00' and '2020-11-30 12:30:00'
